@@ -60,11 +60,10 @@ class ApplicationTest {
     @RegisterExtension
     public static final WireMockExtension wireMockExtension;
 
-    private static final int REDIS_PORT = 6379;
-
     @SuppressWarnings("rawtypes")
     @Container
-    static GenericContainer redis = new GenericContainer(DockerImageName.parse("redis:6-alpine")).withExposedPorts(REDIS_PORT);
+    static GenericContainer redis = new GenericContainer(DockerImageName.parse("redis:6-alpine"))
+            .withExposedPorts(6379);
 
 
     @DynamicPropertySource
@@ -121,7 +120,7 @@ class ApplicationTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """.formatted(TEST_END_USER_IP)))
@@ -178,7 +177,7 @@ class ApplicationTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """.formatted(TEST_END_USER_IP)))
@@ -245,7 +244,7 @@ class ApplicationTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """.formatted(TEST_END_USER_IP)))
@@ -355,7 +354,7 @@ class ApplicationTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """.formatted(TEST_END_USER_IP)))
@@ -465,7 +464,7 @@ class ApplicationTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """.formatted(TEST_END_USER_IP)))
@@ -552,7 +551,7 @@ class ApplicationTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """.formatted(TEST_END_USER_IP)))
@@ -646,7 +645,7 @@ class ApplicationTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """.formatted(TEST_END_USER_IP)))
@@ -727,7 +726,7 @@ class ApplicationTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """.formatted(TEST_END_USER_IP)))
@@ -798,7 +797,7 @@ class ApplicationTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """.formatted(TEST_END_USER_IP)))

@@ -83,7 +83,7 @@ class BankIdClientTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "194.168.2.25",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """))
@@ -111,7 +111,7 @@ class BankIdClientTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "194.168.2.25",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """))
@@ -126,7 +126,7 @@ class BankIdClientTest {
                 .withRequestBody(equalTo("""
                         {
                             "endUserIp": "194.168.2.25",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBOb3JkbmV0Kgo=",
+                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
                         """))
