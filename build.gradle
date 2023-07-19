@@ -33,7 +33,7 @@ dependencies {
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
 	implementation 'com.google.cloud:spring-cloud-gcp-starter'
 	implementation 'com.google.cloud:google-cloud-nio:0.126.17'
-	implementation('com.google.cloud:spring-cloud-gcp-starter-secretmanager') {
+	implementation('com.google.cloud:spring-cloud-gcp-starter-secretmanager:4.5.0') {
 		exclude group: 'commons-logging', module: 'commons-logging'
 	}
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
