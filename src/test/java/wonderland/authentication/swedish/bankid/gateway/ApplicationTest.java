@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
@@ -51,7 +50,6 @@ import static wonderland.authentication.swedish.bankid.gateway.type.Authenticati
 @ActiveProfiles("local-test")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @AutoConfigureWebTestClient
-@Import(TestConfig.class)
 class ApplicationTest {
 
     private static final String TEST_QR_START_TOKEN = "131daac9-16c6-4618-beb0-365768f37289";

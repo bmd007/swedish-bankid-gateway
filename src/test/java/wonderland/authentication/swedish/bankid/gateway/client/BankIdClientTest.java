@@ -57,7 +57,6 @@ class BankIdClientTest {
 
     private BankIdClient bankIdClient;
 
-
     @BeforeEach
     void setUp() throws Exception {
         final WebClientConfig webClientConfig = new WebClientConfig();

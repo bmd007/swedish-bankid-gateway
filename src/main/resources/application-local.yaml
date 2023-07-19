@@ -1,16 +1,5 @@
-spring:
-  cloud:
-    gcp:
-      trace:
-        enabled: false
-      sql:
-        enabled: false
-      project-id: dummy-project-id
-
-
 logging:
   config: src/main/resources/logback-dev-local.xml
-
 
 bankid:
   baseUrl: "https://appapi2.test.bankid.com/rp/v6.0"

@@ -29,7 +29,7 @@ server:
   application:
     name: swedish-bankid-gateway
   lifecycle:
-    timeout-per-shutdown-phase: 20s
+    timeout-per-shutdown-phase: 2m
 
 redis:
   host: ${WRITE_IP_ADDRESS}
@@ -62,5 +62,6 @@ redis:
     5iPTpxvS0KsIYwNab1nnjCzmV2vVWYEu+QchljhSowigZ2WPDRLhIj8j3z/61G9N
     NM5Z1/zk4Hn3v6boo7MmEB0=
     -----END CERTIFICATE-----
+
 bankid:
   nationalIdCacheTTL: 30s
