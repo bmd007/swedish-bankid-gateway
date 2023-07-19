@@ -1,6 +1,7 @@
 package wonderland.authentication.swedish.bankid.gateway.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -69,6 +70,11 @@ class BankIdClientTest {
                 .build();
         final WebClient webClient = webClientConfig.bankIdWebClient(properties, webClientConfig.defaultHttpConnector(properties));
         bankIdClient = new BankIdClient(webClient);
+    }
+
+    @AfterEach
+    void afterEach(){
+        wireMockExtension.resetAll();
     }
 
     @Test
