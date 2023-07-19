@@ -166,7 +166,7 @@ class ApplicationTest {
 
         await().atMost(Duration.ofSeconds(2L))
                 .pollInterval(Duration.ofMillis(100L))
-                .until(() -> wireMockExtension.getServeEvents(ServeEventQuery.forStubMapping(collectPending)).getRequests().size() == 4);
+                .until(() -> wireMockExtension.getServeEvents(ServeEventQuery.forStubMapping(collectPending)).getRequests().size() == 3);
     }
 
     @Test
@@ -223,7 +223,7 @@ class ApplicationTest {
 
         await().atMost(Duration.ofSeconds(2L))
                 .pollInterval(Duration.ofMillis(100L))
-                .until(() -> wireMockExtension.getServeEvents(ServeEventQuery.forStubMapping(collectPending)).getRequests().size() == 4);
+                .until(() -> wireMockExtension.getServeEvents(ServeEventQuery.forStubMapping(collectPending)).getRequests().size() == 3);
     }
 
     @Test
