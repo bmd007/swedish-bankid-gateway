@@ -1,0 +1,66 @@
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-components: always
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  health:
+    diskspace:
+      enabled: false
+    redis:
+      enabled: true
+  server:
+    port: 8081
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+server:
+  shutdown: graceful
+  application:
+    name: swedish-bankid-gateway
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+redis:
+  host: ${WRITE_IP_ADDRESS}
+  port: ${WRITE_PORT}
+  password: ${REDIS_AUTH}
+  sslEnabled: true
+  timeout: 1S
+  connect-timeout: 1S
+  command-timeout: 1S
+  certificate: |
+    -----BEGIN CERTIFICATE-----
+    MIIDnTCCAoWgAwIBAgIBADANBgkqhkiG9w0BAQsFADCBhTEtMCsGA1UELhMkODY3
+    YWRiMzUtZTVjNi00NGExLWIxNzItM2VlYjBmNmNhNDAyMTEwLwYDVQQDEyhHb29n
+    bGUgQ2xvdWQgTWVtb3J5c3RvcmUgUmVkaXMgU2VydmVyIENBMRQwEgYDVQQKEwtH
+    b29nbGUsIEluYzELMAkGA1UEBhMCVVMwHhcNMjMwNjIwMDkwOTI3WhcNMzMwNjE3
+    MDkxMDI3WjCBhTEtMCsGA1UELhMkODY3YWRiMzUtZTVjNi00NGExLWIxNzItM2Vl
+    YjBmNmNhNDAyMTEwLwYDVQQDEyhHb29nbGUgQ2xvdWQgTWVtb3J5c3RvcmUgUmVk
+    aXMgU2VydmVyIENBMRQwEgYDVQQKEwtHb29nbGUsIEluYzELMAkGA1UEBhMCVVMw
+    ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCLuKH7A1800xDJuxYFNzNd
+    iMr5VFWr2mfx+3xE/htXdwVbffGw+ela72ixIMxS8xcG0rOoAe+au2CMWsLodS6I
+    H9sNbYUOVmY36qq5YVm5coMMtxl78ON1eDkg+0vJxwKmcqyJDQfLgo2G9AZrAU92
+    4o3rVs9Z0qrsVhqfH/mlS6ymjVW9od/QkVpEqG6jnnp0sn7FSCPwUXfK6nbYp5DU
+    jluu6102bLusPZ3id+KWQD3Yu+ZjdXHuV2pWQvX0pn3/7gGOrrhRrWJkneu7bD5/
+    CoizhaakFsNQuJTWmi77tP4/SWDryT+snmQd8vyO94s1IlD1AxyTRTVTLrjtFPof
+    AgMBAAGjFjAUMBIGA1UdEwEB/wQIMAYBAf8CAQAwDQYJKoZIhvcNAQELBQADggEB
+    AHYqjHdhGw+PR+ZzSgm2pazxkModaW43h+oymyISqWcFetNhkNOAjj7NpHq3ws4D
+    82yC88HxIDecGAF7suMZ7ZAUYB2Zjnn6MAlW1Ze7OPrQ5hJHjYd8UZeF+PhrN6JV
+    56Pq5RL/isq+Q0NRmKK3Uk5D6Q05Ez9jEmN6Fjwv2GYN7O4O4dv7fHAFnRdK36WR
+    g7lq5HnIYjowuuVB+8bE//cXihacDfGqjIDz6j/uHOcI0LfbhvCWwJFR60Xo+EqT
+    5iPTpxvS0KsIYwNab1nnjCzmV2vVWYEu+QchljhSowigZ2WPDRLhIj8j3z/61G9N
+    NM5Z1/zk4Hn3v6boo7MmEB0=
+    -----END CERTIFICATE-----
+bankid:
+  nationalIdCacheTTL: 30s

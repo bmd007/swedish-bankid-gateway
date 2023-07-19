@@ -1,0 +1,84 @@
+spring:
+  cloud:
+    gcp:
+      trace:
+        enabled: false
+      sql:
+        enabled: false
+      project-id: dummy-project-id
+redis:
+  host: localhost
+  port: 6379
+  sslEnabled: false
+management:
+  health:
+    pubsub:
+      enabled: false
+bankid:
+  baseUrl: "https://localhost:12321"
+  keyStoreCertificate: |
+    -----BEGIN CERTIFICATE-----
+    MIICpDCCAYwCCQCIfpZE1rxY1jANBgkqhkiG9w0BAQsFADAUMRIwEAYDVQQDDAls
+    b2NhbGhvc3QwHhcNMjMwNjEyMDg1NzEyWhcNMzMwNjA5MDg1NzEyWjAUMRIwEAYD
+    VQQDDAlsb2NhbGhvc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC+
+    2slmnq1880CjQFuILu9LrGC0cUZZOoZ9iP3wJVXw6x6gBwOee3CHPwMfUPftVimJ
+    JAZVCDpg0Ffzo+D4k4hqNyZxkOmkWZdj8NT3wWN1A8AxgVMNOtui5TcokLatqunm
+    i3amo1q0Br+IXVrp4wWJbHpexydtNMfBzNaYBEfiGz/z2j5TSmz3HNF8RTkwI2ZG
+    XkVgrwrafuxdavkkbIK4vp8HQuAUUs58fit+TJpCskMzNBbTAla6ONTWWoOXuv/a
+    mACLWfv0zaSw0yE5VcOsIsgVZqMQXhaLSO3O19uwZ4zAL6uvd8YlLVUIRHVR4ldP
+    RrSkDR+AxZPm7kylf5dlAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAG0RECu+Hd7W
+    Hf/fvTJ0VcAkpy9mkJKOIPNy5Cs7F4HDLdUgx6v9a9nI0r2xMDX3OO0jVofJAgAt
+    s1EmNz1oheghrcCeB+p0+QCsVqqSofnbNJDUn8mo4K4iCQg2qRhBmUa9QJvcc30r
+    7DBHh/JNkhqa6eC5Wnw3xBUO66vM4NLr60nijrOzQeSQOefu9IY9Sidlv/c9QOa2
+    4qaasUxNqY8pUffHsxBvd0oF44h35nMR2jWZEeDW08qpNojHXn+hBIt1oOR2dftV
+    YPMPpHxJcJoO/scKV4/HL6MxqQ8NWBV1S1Zs9BlNnUWA7TYIaIv1lk/cwVa8gLbR
+    AatgatdX+t8=
+    -----END CERTIFICATE-----
+  keyStorePrivateKey: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC+2slmnq1880Cj
+    QFuILu9LrGC0cUZZOoZ9iP3wJVXw6x6gBwOee3CHPwMfUPftVimJJAZVCDpg0Ffz
+    o+D4k4hqNyZxkOmkWZdj8NT3wWN1A8AxgVMNOtui5TcokLatqunmi3amo1q0Br+I
+    XVrp4wWJbHpexydtNMfBzNaYBEfiGz/z2j5TSmz3HNF8RTkwI2ZGXkVgrwrafuxd
+    avkkbIK4vp8HQuAUUs58fit+TJpCskMzNBbTAla6ONTWWoOXuv/amACLWfv0zaSw
+    0yE5VcOsIsgVZqMQXhaLSO3O19uwZ4zAL6uvd8YlLVUIRHVR4ldPRrSkDR+AxZPm
+    7kylf5dlAgMBAAECggEBAKcBxKMrzxw7sCAqvO3aREOvv5+mT6zc7bsEGVH/GckL
+    tWzLNnuEAOAYX58Ttx/T+dyrzW6zGIKHTa9BhCeA0io/wEA4UnsiertVjsaOT32h
+    npizVf2Jt5A/i5jPqUsm+C5pc5Y187T9ArVNG7T2l229owc0tmd1fCc2G8JCXLSZ
+    KMpR5Reh423UlyhkakODhVxEHGMBD+PtvbJmOtWK6hoKnE/det0xXlS30Fjn0OW9
+    4wKJ8fyGPoymEKH+K+yD2qGTInoMep7BlDLA7f2mh7TXP98kFVFv/XfpM/AC/r7+
+    iZTz1743sCyWBhhE+48VWusKLafTFUaktQTtK8960bECgYEA4z7TTFgl3XTW1jNQ
+    1imoX5krwj5/P2V+JGb6nJikprWQY2tE95jApmu+VgTShVXJPh2K69PF7p5Lflgz
+    Qw9LxfU94wDoY9x10z8YRuQEeUmIKdve7G/JvMi+6odQ3HvJW5C/odybcIulOVwJ
+    6jrDGYVqGUDPj6V47MZBLy8hUdcCgYEA1wEnFqZ087epk85ANX47a2J/4QGFlFTa
+    61o3zm6UGMWTFx5irLUDJpeIsKuZAAbuhCCevN5hTRSIMkNOPaVqZBnSlsJa7pes
+    LI+5Bzq1veXU5YM9TknY+cjv/Q9kpc9eiIVRcrfGnGWrF/v1mjtY+nhTqsCtVb7v
+    duQ9+giK8SMCgYBHSJfjpOsL0vDpdGNxKtQkWNn/Lref3Wh6ZstKgB92JBJM/YM+
+    3+3exoGIXi7joItmLsI7Q80dEw6/bU93Q78TM+Db6pb7bFaRk4M8CZ7VpRlPeCcv
+    p8lyrM4mp5fX8gSx8nAKiDdCUKvdmF+L2C8HPHCRx2DUwKV0MKSV9oTPNQKBgCq5
+    WOogU7cmdPUhFBNNLUOOhDjTE5dBMWt5NwO3Z4hwomUCrbsCEUk27Xul7bZaqkTp
+    MoH3csBdZx8NzttjJnwTwYwhvO4Sh60nNi5glULSC/c7mBAZjps8OaxAxdBJH9Dj
+    JSc1q6ribRhMAicOygSjqoSQ2yDh2zX17vbjgbCfAoGAceQskQqCBXRQKG1nUpjk
+    SWc4xTFul1I4bxk2ooCIs/TWS5X/7rPIXi8IYVvCH4bBqE3Ktyru9RJeKk5u6p7k
+    3owGCN8yvW4DRfDGVCMOwfwxhv3V3ma75iE12yj6YRzNp8Bk+wMAwuN+TT4Lrp9d
+    Ujmpiu8MJUe843hC8tDU++M=
+    -----END PRIVATE KEY-----
+  trustStore: |
+    -----BEGIN CERTIFICATE-----
+    MIICpDCCAYwCCQDBo4kpmxQzoDANBgkqhkiG9w0BAQsFADAUMRIwEAYDVQQDDAls
+    b2NhbGhvc3QwHhcNMjMwNjEyMDg0MjM1WhcNMzMwNjA5MDg0MjM1WjAUMRIwEAYD
+    VQQDDAlsb2NhbGhvc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDJ
+    ioOJ6CUQwoofohsXcT5nwFSz7yIg6wqYqafBoRbfiDJ3kMPTksFpqgE5nAWnE0Q9
+    vju9P/XiUxLHoHDwNHys+UpWSUOQhcawAUQHfA04JFq3VTlibh+hdEoaBxz62woh
+    Sw8fhxcn121uRa4IDisAYBzmj7//9tLB5BWLLYv8KM99FCtDw5qpKvz0XS0zbvNy
+    tjt70BFY8oiDd+qCJH5dBJ7BeegdfddNCEzmVuhMyfO6QSmiubdRz5y3Qr6SzvFe
+    LlgnC0XcOELH8B7VUzkfmLWNVCcgDGmUZkCvMVgjtkSR0W21zJo7WVpa/n4CWNtN
+    NyiDF9Dzo3XZ7ZkQor+nAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAJofeVRckOY8
+    j9uCvAZzOlJ2mFrlUQEaiIxW8qjrmsASV3NW+vbv1rMh8lgYr+cWCJJQRVb0G5Bm
+    u1UzXZaw2bThMDYjKSnzgEUQyt5Da9hm8UPMDFtnZDYY3Pe4Mu7X6hPmQN326UdJ
+    PhTmKkBG8uReUZcDNMjr3ztkgoU9WA3IxHJix6AAM5nQbSO9jI9525UuZZdFOqkg
+    tEMDliJmLaXxiuZYzT5U7IhD+rHouHM06Ni+YbOtKphdzj2PicMiXVuTqxGj1ydm
+    +YgrkuHZX1+eOK+p/cZ27bA6gjKTb62XDDhcS3f3cFu4rKxZiMAQ4qoKCvfUaQCE
+    wIYckGWJTTo=
+    -----END CERTIFICATE-----
+  nationalIdCacheTTL: 1s
