@@ -22,7 +22,7 @@ openssl pkcs12 -in trustStore.p12 -out truststore.pem -nodes
 For test the truststore password is: coolbeans
 
 ```
-openssl pkcs12 -in FPTestcert5_20240610.p12 -out keystore.pem -nodes
+openssl pkcs12 -in FPTestcert5_20240610.p12 -out decrypted-keystore.pem -nodes
 ```
 
 For test the keystore password is: qwerty123

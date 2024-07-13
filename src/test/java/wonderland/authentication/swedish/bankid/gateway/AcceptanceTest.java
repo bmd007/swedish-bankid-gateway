@@ -49,7 +49,7 @@ import static wonderland.authentication.swedish.bankid.gateway.type.Authenticati
 
 @Testcontainers
 @Slf4j
-@ActiveProfiles("local-acceptance-test")
+@ActiveProfiles("local")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @AutoConfigureWebTestClient
 class AcceptanceTest {
