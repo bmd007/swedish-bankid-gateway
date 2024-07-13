@@ -24,12 +24,15 @@ management:
     metrics:
       export:
         enabled: true
-server:
-  shutdown: graceful
+
+spring:
   application:
     name: swedish-bankid-gateway
   lifecycle:
     timeout-per-shutdown-phase: 2m
+
+server:
+  shutdown: graceful
 
 redis:
   host: ${WRITE_IP_ADDRESS}

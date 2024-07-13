@@ -12,7 +12,6 @@ import java.time.Duration;
 @AllArgsConstructor
 @Getter
 public class RedisProperties {
-
     @NotBlank
     String host;
     @NotNull

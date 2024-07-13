@@ -17,13 +17,9 @@ import java.util.logging.Level;
 @Slf4j
 public class BankIdClient {
 
-    private static final String AUTH_PATH = "/rp/v6.0/auth";
-    private static final String COLLECT_PATH = "/rp/v6.0/collect";
-
-    private static final String AUTH_TEXT = """
-            *Logga in på Wonderland*
-            """;
-    private static final String AUTH_TEXT_BASE64 = Base64.getEncoder().encodeToString(AUTH_TEXT.getBytes(StandardCharsets.UTF_8));
+    private static final String AUTH_TEXT_BASE64 = Base64.getEncoder().encodeToString("""
+            *Login to Wonderland*
+            """.getBytes(StandardCharsets.UTF_8));
 
     private final WebClient bankIdWebClient;
 
@@ -33,7 +29,7 @@ public class BankIdClient {
 
     public Mono<AuthenticationResponse> auth(String endUserIp) {
         return bankIdWebClient.post()
-                .uri(AUTH_PATH)
+                .uri("/rp/v6.0/auth")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue("""
@@ -51,7 +47,7 @@ public class BankIdClient {
 
     public Mono<CollectResponse> collect(String orderReference) {
         return bankIdWebClient.post()
-                .uri(COLLECT_PATH)
+                .uri("/rp/v6.0/collect")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue("""

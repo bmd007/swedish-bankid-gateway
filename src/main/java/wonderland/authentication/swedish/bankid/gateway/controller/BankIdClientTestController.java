@@ -30,5 +30,4 @@ public class BankIdClientTestController {
     Mono<CollectResponse> checkCollect(@RequestParam String orderReference) {
         return bankIdClient.collect(orderReference);
     }
-
 }
