@@ -33,7 +33,6 @@ spring:
 
 server:
   shutdown: graceful
-
 redis:
   host: ${WRITE_IP_ADDRESS}
   port: ${WRITE_PORT}

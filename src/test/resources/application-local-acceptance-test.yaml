@@ -7,7 +7,7 @@ redis:
   sslEnabled: false
 
 bankid:
-  baseUrl: "https://appapi2.test.bankid.com/rp/v6.0"
+  baseUrl: "https://appapi2.test.bankid.com"
   keyStoreCertificate: |
     -----BEGIN CERTIFICATE-----
     MIIEyjCCArKgAwIBAgIIMLbIMaRHjMMwDQYJKoZIhvcNAQELBQAwcTELMAkGA1UE
