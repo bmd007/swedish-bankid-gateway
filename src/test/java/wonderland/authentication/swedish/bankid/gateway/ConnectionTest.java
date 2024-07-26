@@ -23,7 +23,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles("local")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @AutoConfigureWebTestClient
-class AcceptanceTest {
+class ConnectionTest {
 
     @SuppressWarnings("rawtypes")
     @Container
