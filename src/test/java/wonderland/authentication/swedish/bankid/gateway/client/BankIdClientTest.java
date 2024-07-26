@@ -11,11 +11,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import wonderland.authentication.swedish.bankid.gateway.client.bankid.BankIdClient;
-import wonderland.authentication.swedish.bankid.gateway.client.type.AuthenticationResponse;
-import wonderland.authentication.swedish.bankid.gateway.client.type.CollectResponse;
 import wonderland.authentication.swedish.bankid.gateway.config.BankIdProperties;
 import wonderland.authentication.swedish.bankid.gateway.config.WebClientConfig;
+import wonderland.authentication.swedish.bankid.gateway.type.AuthenticationResponse;
+import wonderland.authentication.swedish.bankid.gateway.type.CollectResponse;
 
 import java.io.IOException;
 import java.net.URI;
@@ -23,6 +22,7 @@ import java.net.URI;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.badRequest;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.serverError;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BankIdClientTest {
 
+    public static final String END_USER_IP = "194.168.2.25";
     @RegisterExtension
     static WireMockExtension wireMockExtension;
 
@@ -44,7 +45,7 @@ class BankIdClientTest {
                                     .needClientAuth(true)
                                     .trustStoreType("PKCS12")
                                     .trustStorePassword("pwd")
-                                    .trustStorePath(new ClassPathResource("nn_certificate.p12").getFile().getAbsolutePath())
+                                    .trustStorePath(new ClassPathResource("relaying_party_certificate.p12").getFile().getAbsolutePath())
                                     .keystoreType("PKCS12")
                                     .keystorePassword("pwd")
                                     .keyManagerPassword("pwd")
@@ -61,32 +62,31 @@ class BankIdClientTest {
     @BeforeEach
     void setUp() throws Exception {
         final WebClientConfig webClientConfig = new WebClientConfig();
-
         BankIdProperties properties = BankIdProperties.builder()
                 .baseUrl(URI.create(wireMockExtension.baseUrl()))
                 .trustStore(LOCALHOST_CERTIFICATE_CONTENT)
-                .keyStoreCertificate(NN_CERTIFICATE_CONTENT)
-                .keyStorePrivateKey(NN_PRIVATE_KEY_CONTENT)
+                .keyStoreCertificate(RELAYING_PARTY_CERTIFICATE_CONTENT)
+                .keyStorePrivateKey(RELAYING_PARTY_PRIVATE_KEY_CONTENT)
                 .build();
         final WebClient webClient = webClientConfig.bankIdWebClient(properties, webClientConfig.defaultHttpConnector(properties));
         bankIdClient = new BankIdClient(webClient);
     }
 
     @AfterEach
-    void afterEach(){
+    void afterEach() {
         wireMockExtension.resetAll();
     }
 
     @Test
     void auth() {
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
-                            "endUserIp": "194.168.2.25",
+                            "endUserIp": "%s",
                             "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
-                        """))
+                        """.formatted(END_USER_IP)))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody("""
@@ -96,9 +96,7 @@ class BankIdClientTest {
                                 "qrStartToken": "ef2fdf1a-ba96-440e-bf05-e122b43db754",
                                 "qrStartSecret": "0ce68cf7-7d35-4386-9bad-46ee426cadca"
                                 }""")));
-
-        final AuthenticationResponse response = bankIdClient.auth("194.168.2.25").block();
-
+        final AuthenticationResponse response = bankIdClient.auth(END_USER_IP).block();
         assertThat(response.orderRef()).isEqualTo("a5bd28bd-a6d5-47fb-bdb3-94faccb90d7d");
         assertThat(response.autoStartToken()).isEqualTo("bc6a7029-af6b-4b05-a02e-06f7cc5162db");
         assertThat(response.qrStartToken()).isEqualTo("ef2fdf1a-ba96-440e-bf05-e122b43db754");
@@ -108,30 +106,30 @@ class BankIdClientTest {
     @Test
     void authWhen500FromBankId() {
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
-                            "endUserIp": "194.168.2.25",
+                            "endUserIp": "%s",
                             "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
-                        """))
+                        """.formatted(END_USER_IP)))
                 .willReturn(serverError()));
-        WebClientResponseException e = assertThrows(WebClientResponseException.class, () -> bankIdClient.auth("194.168.2.25").block());
+        WebClientResponseException e = assertThrows(WebClientResponseException.class, () -> bankIdClient.auth(END_USER_IP).block());
         assertThat(e.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Test
     void authWhen400FromBankId() {
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
-                            "endUserIp": "194.168.2.25",
+                            "endUserIp": "%s",
                             "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
                             "userVisibleDataFormat": "simpleMarkdownV1"
                         }
-                        """))
+                        """.formatted(END_USER_IP)))
                 .willReturn(badRequest()));
-        WebClientResponseException e = assertThrows(WebClientResponseException.class, () -> bankIdClient.auth("194.168.2.25").block());
+        WebClientResponseException e = assertThrows(WebClientResponseException.class, () -> bankIdClient.auth(END_USER_IP).block());
         assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -148,10 +146,7 @@ class BankIdClientTest {
                                   "status":"%s",
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, status))));
-
-
         final CollectResponse response = bankIdClient.collect(orderReference).block();
-
         assertThat(response.orderRef()).isEqualTo(orderReference);
         assertThat(response.status()).isEqualTo(CollectResponse.Status.fromString(status));
         assertThat(response.hintCode()).isEqualTo("hintCode");
@@ -182,10 +177,7 @@ class BankIdClientTest {
                                      "ocspResponse":"<base64-encoded data>"
                                    }
                                  }""".formatted(orderReference))));
-
-
         final CollectResponse response = bankIdClient.collect(orderReference).block();
-
         assertThat(response.orderRef()).isEqualTo(orderReference);
         assertThat(response.status()).isEqualTo(CollectResponse.Status.COMPLETE);
         assertThat(response.hintCode()).isNull();
@@ -227,8 +219,8 @@ class BankIdClientTest {
             +YgrkuHZX1+eOK+p/cZ27bA6gjKTb62XDDhcS3f3cFu4rKxZiMAQ4qoKCvfUaQCE
             wIYckGWJTTo=
             -----END CERTIFICATE-----
-                                    """;
-    private static final String NN_PRIVATE_KEY_CONTENT = """
+            """;
+    private static final String RELAYING_PARTY_PRIVATE_KEY_CONTENT = """
             -----BEGIN PRIVATE KEY-----
             MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC+2slmnq1880Cj
             QFuILu9LrGC0cUZZOoZ9iP3wJVXw6x6gBwOee3CHPwMfUPftVimJJAZVCDpg0Ffz
@@ -257,9 +249,9 @@ class BankIdClientTest {
             3owGCN8yvW4DRfDGVCMOwfwxhv3V3ma75iE12yj6YRzNp8Bk+wMAwuN+TT4Lrp9d
             Ujmpiu8MJUe843hC8tDU++M=
             -----END PRIVATE KEY-----
-                        """;
+            """;
 
-    private static final String NN_CERTIFICATE_CONTENT = """
+    private static final String RELAYING_PARTY_CERTIFICATE_CONTENT = """
             -----BEGIN CERTIFICATE-----
             MIICpDCCAYwCCQCIfpZE1rxY1jANBgkqhkiG9w0BAQsFADAUMRIwEAYDVQQDDAls
             b2NhbGhvc3QwHhcNMjMwNjEyMDg1NzEyWhcNMzMwNjA5MDg1NzEyWjAUMRIwEAYD
@@ -277,5 +269,5 @@ class BankIdClientTest {
             YPMPpHxJcJoO/scKV4/HL6MxqQ8NWBV1S1Zs9BlNnUWA7TYIaIv1lk/cwVa8gLbR
             AatgatdX+t8=
             -----END CERTIFICATE-----
-                                       """;
+            """;
 }

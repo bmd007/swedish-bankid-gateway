@@ -1,20 +1,10 @@
 package wonderland.authentication.swedish.bankid.gateway;
 
-import com.github.tomakehurst.wiremock.admin.model.ServeEventQuery;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.redis.core.ReactiveRedisOperations;
-import org.springframework.http.MediaType;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -23,29 +13,10 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-import wonderland.authentication.swedish.bankid.gateway.client.type.AuthenticationResponse;
-import wonderland.authentication.swedish.bankid.gateway.config.BankIdProperties;
-import wonderland.authentication.swedish.bankid.gateway.type.AuthenticationEvent;
-import wonderland.authentication.swedish.bankid.gateway.type.AuthenticationStatus;
-import wonderland.authentication.swedish.bankid.gateway.type.NationalIdResponse;
+import wonderland.authentication.swedish.bankid.gateway.type.AuthenticationResponse;
 
-import java.io.IOException;
-import java.time.Duration;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.serverError;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static wonderland.authentication.swedish.bankid.gateway.type.AuthenticationStatus.COMPLETE;
-import static wonderland.authentication.swedish.bankid.gateway.type.AuthenticationStatus.ERROR;
-import static wonderland.authentication.swedish.bankid.gateway.type.AuthenticationStatus.FAILED;
 
 @Testcontainers
 @Slf4j

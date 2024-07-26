@@ -26,9 +26,9 @@ import org.testcontainers.utility.DockerImageName;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 import wonderland.authentication.swedish.bankid.gateway.config.BankIdProperties;
-import wonderland.authentication.swedish.bankid.gateway.type.NationalIdResponse;
 import wonderland.authentication.swedish.bankid.gateway.type.AuthenticationEvent;
 import wonderland.authentication.swedish.bankid.gateway.type.AuthenticationStatus;
+import wonderland.authentication.swedish.bankid.gateway.type.NationalIdResponse;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -86,7 +86,7 @@ class ApplicationTest {
                                     .needClientAuth(true)
                                     .trustStoreType("PKCS12")
                                     .trustStorePassword("pwd")
-                                    .trustStorePath(new ClassPathResource("nn_certificate.p12").getFile().getAbsolutePath())
+                                    .trustStorePath(new ClassPathResource("relaying_party_certificate.p12").getFile().getAbsolutePath())
                                     .keystoreType("PKCS12")
                                     .keystorePassword("pwd")
                                     .keyManagerPassword("pwd")
@@ -424,10 +424,10 @@ class ApplicationTest {
                 .expectNextMatches(authenticationEvent -> assertPendingSameDeviceEvent(2, authenticationEvent))
                 .expectNextMatches(authenticationEvent -> assertPendingSameDeviceEvent(3, authenticationEvent))
                 .expectNextMatches(authenticationEvent -> authenticationEvent.status().equals(COMPLETE)
-                                              && authenticationEvent.data() == null
-                                              && Integer.parseInt(authenticationEvent.id()) == 4
-                                              && authenticationEvent.completionData().orderReference().equals(orderReference)
-                                              && authenticationEvent.completionData().nationalId().equals(nationalId)
+                        && authenticationEvent.data() == null
+                        && Integer.parseInt(authenticationEvent.id()) == 4
+                        && authenticationEvent.completionData().orderReference().equals(orderReference)
+                        && authenticationEvent.completionData().nationalId().equals(nationalId)
                 )
                 .verifyComplete();
 
@@ -534,10 +534,10 @@ class ApplicationTest {
                 .expectNextMatches(authenticationEvent -> assertPendingSameDeviceEvent(2, authenticationEvent))
                 .expectNextMatches(authenticationEvent -> assertPendingSameDeviceEvent(3, authenticationEvent))
                 .expectNextMatches(authenticationEvent -> authenticationEvent.status().equals(ERROR)
-                                              && authenticationEvent.data() == null
-                                              && Integer.parseInt(authenticationEvent.id()) == -1
-                                              && authenticationEvent.completionData() == null
-                                              && authenticationEvent.hintCode() == null
+                        && authenticationEvent.data() == null
+                        && Integer.parseInt(authenticationEvent.id()) == -1
+                        && authenticationEvent.completionData() == null
+                        && authenticationEvent.hintCode() == null
                 )
                 .verifyComplete();
     }
@@ -618,11 +618,11 @@ class ApplicationTest {
                 .create(serverSentEvents.takeLast(2))
                 .expectNextMatches(this::assertPendingQrEvent)
                 .expectNextMatches(authenticationEvent -> authenticationEvent.status().equals(COMPLETE)
-                                              && authenticationEvent.data() == null
-                                              && Integer.parseInt(authenticationEvent.id()) == 1
-                                              && authenticationEvent.completionData().orderReference().equals(orderReference)
-                                              && authenticationEvent.completionData().nationalId().equals(nationalId)
-                                              && authenticationEvent.hintCode() == null
+                        && authenticationEvent.data() == null
+                        && Integer.parseInt(authenticationEvent.id()) == 1
+                        && authenticationEvent.completionData().orderReference().equals(orderReference)
+                        && authenticationEvent.completionData().nationalId().equals(nationalId)
+                        && authenticationEvent.hintCode() == null
                 )
                 .verifyComplete();
 
@@ -702,10 +702,10 @@ class ApplicationTest {
                 .expectNextMatches(this::assertPendingQrEvent)
                 .expectNextMatches(this::assertPendingQrEvent)
                 .expectNextMatches(authenticationEvent -> authenticationEvent.status().equals(FAILED)
-                                              && authenticationEvent.data() == null
-                                              && Integer.parseInt(authenticationEvent.id()) == 4
-                                              && authenticationEvent.completionData() == null
-                                              && authenticationEvent.hintCode().equals("hintCode")
+                        && authenticationEvent.data() == null
+                        && Integer.parseInt(authenticationEvent.id()) == 4
+                        && authenticationEvent.completionData() == null
+                        && authenticationEvent.hintCode().equals("hintCode")
                 )
                 .verifyComplete();
 
@@ -775,10 +775,10 @@ class ApplicationTest {
                 .expectNextMatches(this::assertPendingQrEvent)
                 .expectNextMatches(this::assertPendingQrEvent)
                 .expectNextMatches(authenticationEvent -> authenticationEvent.status().equals(ERROR)
-                                              && authenticationEvent.data() == null
-                                              && authenticationEvent.id().equals("-1")
-                                              && authenticationEvent.completionData() == null
-                                              && authenticationEvent.hintCode() == null
+                        && authenticationEvent.data() == null
+                        && authenticationEvent.id().equals("-1")
+                        && authenticationEvent.completionData() == null
+                        && authenticationEvent.hintCode() == null
                 )
                 .verifyComplete();
 
@@ -820,10 +820,10 @@ class ApplicationTest {
         StepVerifier
                 .create(serverSentEvents)
                 .expectNextMatches(authenticationEvent -> authenticationEvent.status().equals(ERROR)
-                                              && authenticationEvent.data() == null
-                                              && authenticationEvent.id().equals("-1")
-                                              && authenticationEvent.completionData() == null
-                                              && authenticationEvent.hintCode() == null
+                        && authenticationEvent.data() == null
+                        && authenticationEvent.id().equals("-1")
+                        && authenticationEvent.completionData() == null
+                        && authenticationEvent.hintCode() == null
                 )
                 .verifyComplete();
     }

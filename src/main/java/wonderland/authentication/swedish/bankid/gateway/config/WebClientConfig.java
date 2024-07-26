@@ -27,9 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebClientConfig {
-    private static final int CONNECT_TIMEOUT_MILLIS = 2_000;
-    private static final long READ_TIMEOUT_MILLIS = 2_000L;
-    private static final long WRITE_TIMEOUT_MILLIS = 2_000L;
 
     private PrivateKey readPrivateKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
         String privateKeyPEM = key
@@ -59,10 +56,10 @@ public class WebClientConfig {
 
         HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(context));
 
-        httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS);
+        httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2_000);
         httpClient.doOnConnected(connection -> connection
-                .addHandlerFirst(new ReadTimeoutHandler(READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS))
-                .addHandlerFirst(new WriteTimeoutHandler(WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS))
+                .addHandlerFirst(new ReadTimeoutHandler(2_000L, TimeUnit.MILLISECONDS))
+                .addHandlerFirst(new WriteTimeoutHandler(2_000L, TimeUnit.MILLISECONDS))
         );
         return new ReactorClientHttpConnector(httpClient);
     }

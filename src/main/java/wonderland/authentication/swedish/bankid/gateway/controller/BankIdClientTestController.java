@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
-import wonderland.authentication.swedish.bankid.gateway.client.bankid.BankIdClient;
-import wonderland.authentication.swedish.bankid.gateway.client.type.AuthenticationResponse;
-import wonderland.authentication.swedish.bankid.gateway.client.type.CollectResponse;
+import wonderland.authentication.swedish.bankid.gateway.client.BankIdClient;
+import wonderland.authentication.swedish.bankid.gateway.type.AuthenticationResponse;
+import wonderland.authentication.swedish.bankid.gateway.type.CollectResponse;
 
 @Slf4j
 @RestController

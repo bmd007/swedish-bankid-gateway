@@ -1,4 +1,4 @@
-package wonderland.authentication.swedish.bankid.gateway.client.type;
+package wonderland.authentication.swedish.bankid.gateway.type;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -12,8 +12,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import wonderland.authentication.swedish.bankid.gateway.service.BankIdService;
 import wonderland.authentication.swedish.bankid.gateway.type.AuthenticationEvent;
-import wonderland.authentication.swedish.bankid.gateway.type.UseCase;
 import wonderland.authentication.swedish.bankid.gateway.type.NationalIdResponse;
+import wonderland.authentication.swedish.bankid.gateway.type.UseCase;
 
 @Slf4j
 @RestController

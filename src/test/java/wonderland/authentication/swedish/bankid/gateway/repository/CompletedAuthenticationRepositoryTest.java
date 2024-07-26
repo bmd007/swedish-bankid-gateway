@@ -34,11 +34,8 @@ class CompletedAuthenticationRepositoryTest {
     static void setRedisProperties(DynamicPropertyRegistry registry) {
         String address = redis.getHost();
         Integer port = redis.getFirstMappedPort();
-
         registry.add("redis.host", () -> address);
         registry.add("redis.port", () -> port);
-
-        log.info("**** Redis address: {}, port: {} ****", address, port);
     }
 
     @Test
@@ -51,5 +48,4 @@ class CompletedAuthenticationRepositoryTest {
         assertThat(storedNationalId).isEqualTo(nationalId);
         assertThat(completedAuthenticationRepository.getNationalId(orderRef).block()).isNull();
     }
-
 }

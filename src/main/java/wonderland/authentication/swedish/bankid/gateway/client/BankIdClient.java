@@ -1,4 +1,4 @@
-package wonderland.authentication.swedish.bankid.gateway.client.bankid;
+package wonderland.authentication.swedish.bankid.gateway.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SignalType;
-import wonderland.authentication.swedish.bankid.gateway.client.type.AuthenticationResponse;
-import wonderland.authentication.swedish.bankid.gateway.client.type.CollectResponse;
+import wonderland.authentication.swedish.bankid.gateway.type.AuthenticationResponse;
+import wonderland.authentication.swedish.bankid.gateway.type.CollectResponse;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
