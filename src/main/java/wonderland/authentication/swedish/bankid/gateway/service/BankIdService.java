@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.util.Optional;
 
 import static wonderland.authentication.swedish.bankid.gateway.type.AuthenticationStatus.COMPLETE;
 import static wonderland.authentication.swedish.bankid.gateway.type.AuthenticationStatus.ERROR;
@@ -55,7 +56,8 @@ public class BankIdService {
                 .flatMapMany(authRsp ->
                         Flux.interval(Duration.ZERO, Duration.ofSeconds(1))
                                 .flatMap(sequence -> bankIdClient.collect(authRsp.orderRef())
-                                        .filter(collectResponse -> ipCheck(useCase, endUserIp, collectResponse))
+                                        .doOnNext(this::warnHighRisks)
+                                        .filter(colRsp -> ipCheck(useCase, endUserIp, colRsp))
                                         .map(colRsp -> createAuthenticationEvent(authRsp, sequence, colRsp, useCase))
                                         .switchIfEmpty(Mono.just(AuthenticationEvent.error()))
                                 )
@@ -67,6 +69,28 @@ public class BankIdService {
                 .take(Duration.ofMinutes(2L));
     }
 
+    private boolean ipCheck(UseCase useCase, String endUserIp, CollectResponse collectResponse) {
+        if (useCase == QR) {
+            return true;
+        }
+        if (collectResponse.status() != CollectResponse.Status.COMPLETE){
+            return true;
+        }
+        if(!collectResponse.completionData().device().ipAddress().equals(endUserIp)){
+            log.warn("End user IP mismatch: end user IP {}  vs. device IP reported by BankId {}", endUserIp, collectResponse.completionData().device().ipAddress());
+            return false;
+        }
+        return true;
+    }
+
+    private void warnHighRisks(CollectResponse collectResponse) {
+        Optional.ofNullable(collectResponse)
+                .map(CollectResponse::completionData)
+                .map(CollectResponse.CompletionData::risk)
+                .filter(risk -> !risk.equalsIgnoreCase("low"))
+                .ifPresent(risk -> log.warn("Risk {} for order reference {}", risk, collectResponse.orderRef()));
+    }
+
     private Mono<Void> saveCompletedAuthenticationData(AuthenticationEvent authenticationEvent) {
         if (authenticationEvent.status() == COMPLETE) {
             String orderReference = authenticationEvent.completionData().orderReference();
@@ -74,20 +98,6 @@ public class BankIdService {
             return completedAuthenticationRepository.save(orderReference, nationalId).then();
         }
         return Mono.empty().then();
-    }
-
-    private boolean ipCheck(UseCase useCase, String endUserIp, CollectResponse collectResponse) {
-        if (useCase == QR) {
-            return true;
-        }
-        if (collectResponse.status() != CollectResponse.Status.COMPLETE) {
-            return true;
-        }
-        if (!collectResponse.completionData().device().ipAddress().equals(endUserIp)) {
-            log.warn("End user IP mismatch: end user IP {}  vs. device IP reported by BankId {}", endUserIp, collectResponse.completionData().device().ipAddress());
-            return false;
-        }
-        return true;
     }
 
     private AuthenticationEvent createAuthenticationEvent(AuthenticationResponse authRsp, Long sequence, CollectResponse colRsp, UseCase authenticationMode) {
