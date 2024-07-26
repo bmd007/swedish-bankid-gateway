@@ -43,7 +43,7 @@ public class BankIdClient {
                 .retrieve()
                 .bodyToMono(AuthenticationResponse.class)
                 .doOnNext(authenticationResponse -> log.info("Started auth {} for ip {}", authenticationResponse, endUserIp))
-                .doOnError(authenticationResponse -> log.error("Failed to start auth for ip {}", endUserIp));
+                .doOnError(_ -> log.error("Failed to start auth for ip {}", endUserIp));
     }
 
     public Mono<CollectResponse> collect(String orderReference) {

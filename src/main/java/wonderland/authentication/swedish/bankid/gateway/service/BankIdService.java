@@ -46,7 +46,7 @@ public class BankIdService {
     public Mono<String> getNationalId(String orderReference) {
         return completedAuthenticationRepository.getNationalId(orderReference)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-                .doOnNext(nationalId -> log.info("national id {} found for order reference {}", nationalId, orderReference))
+                .doOnNext(nationalId -> log.info("National id {} found for order reference {}", nationalId, orderReference))
                 .doOnError(throwable -> log.error("Failed to get national id for order reference {}", orderReference, throwable));
     }
 
@@ -60,7 +60,7 @@ public class BankIdService {
                                         .switchIfEmpty(Mono.just(AuthenticationEvent.error()))
                                 )
                 )
-                .doOnError(throwable -> log.error("unexpected error in the stream", throwable))
+                .doOnError(throwable -> log.error("Unexpected error in the stream", throwable))
                 .onErrorReturn(AuthenticationEvent.error())
                 .delayUntil(this::saveCompletedAuthenticationData)
                 .takeUntil(authenticationEvent -> authenticationEvent.status() == COMPLETE || authenticationEvent.status() == FAILED || authenticationEvent.status() == ERROR)
@@ -119,9 +119,7 @@ public class BankIdService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid secret", e);
         }
         mac.update(sequence.getBytes(StandardCharsets.US_ASCII));
-
         String qrAuthCode = String.format("%064x", new BigInteger(1, mac.doFinal()));
-
         String qrData = String.join(".", "bankid", qrStartToken, sequence, qrAuthCode);
         return AuthenticationEvent.pending(sequence, qrData, hintCode);
     }

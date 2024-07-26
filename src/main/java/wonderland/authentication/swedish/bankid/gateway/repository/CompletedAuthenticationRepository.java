@@ -34,7 +34,7 @@ public class CompletedAuthenticationRepository {
                 .switchIfEmpty(Mono.error(new IllegalStateException("Failed to save in redis. Data: %s".formatted(orderReference))))
                 .log("CompletedAuthenticationRepository.save", Level.WARNING, SignalType.ON_ERROR)
                 .publishOn(Schedulers.boundedElastic())
-                .doOnError(throwable -> redisOperations.delete(orderReference).subscribe());
+                .doOnError(_ -> redisOperations.delete(orderReference).subscribe());
     }
 
     public Mono<String> getNationalId(String orderReference) {
