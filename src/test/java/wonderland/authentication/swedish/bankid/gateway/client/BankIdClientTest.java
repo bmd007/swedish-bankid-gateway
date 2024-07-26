@@ -1,6 +1,7 @@
 package wonderland.authentication.swedish.bankid.gateway.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,8 +84,9 @@ class BankIdClientTest {
                 .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(END_USER_IP)))
                 .willReturn(aResponse()
@@ -109,8 +111,9 @@ class BankIdClientTest {
                 .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(END_USER_IP)))
                 .willReturn(serverError()));
@@ -124,8 +127,9 @@ class BankIdClientTest {
                 .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(END_USER_IP)))
                 .willReturn(badRequest()));

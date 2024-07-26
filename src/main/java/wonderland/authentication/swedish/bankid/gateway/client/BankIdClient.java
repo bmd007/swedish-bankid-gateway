@@ -36,7 +36,8 @@ public class BankIdClient {
                         {
                             "endUserIp": "%s",
                             "userVisibleData": "%s",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(endUserIp, AUTH_TEXT_BASE64))
                 .retrieve()

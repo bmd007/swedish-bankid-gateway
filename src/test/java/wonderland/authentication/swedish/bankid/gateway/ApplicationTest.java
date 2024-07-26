@@ -35,6 +35,7 @@ import java.time.Duration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.serverError;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -68,13 +69,8 @@ class ApplicationTest {
 
     @DynamicPropertySource
     static void setRedisProperties(DynamicPropertyRegistry registry) {
-        String address = redis.getHost();
-        Integer port = redis.getFirstMappedPort();
-
-        registry.add("redis.host", () -> address);
-        registry.add("redis.port", () -> port);
-
-        log.info("**** Redis address: {}, port: {} ****", address, port);
+        registry.add("redis.host", () -> redis.getHost());
+        registry.add("redis.port", () -> redis.getFirstMappedPort());
     }
 
     static {
@@ -114,14 +110,15 @@ class ApplicationTest {
 
     @Test
     void getStatusStreamAllPending() {
+        //given
         String orderReference = "131daac9-16c6-4618-beb0-365768f37288";
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(TEST_END_USER_IP)))
                 .willReturn(aResponse()
@@ -133,7 +130,6 @@ class ApplicationTest {
                                 "qrStartToken": "%s",
                                 "qrStartSecret": "0ce68cf7-7d35-4386-9bad-46ee426cadca"
                                 }""".formatted(orderReference, TEST_QR_START_TOKEN))));
-
         final StubMapping collectPending = wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/collect"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -143,27 +139,26 @@ class ApplicationTest {
                                   "status":"%s",
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, "pending"))));
-
         ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
         };
+        //when
         Flux<AuthenticationEvent> serverSentEvents = testClient
                 .get()
                 .uri("/v1/methods/swedish-bankid/authentication-events?useCase=QR")
                 .header("x-envoy-external-address", TEST_END_USER_IP)
                 .accept(MediaType.valueOf(MediaType.TEXT_EVENT_STREAM_VALUE))
                 .exchange()
+                //then
                 .expectStatus().isOk()
                 .returnResult(type)
                 .getResponseBody()
                 .mapNotNull(ServerSentEvent::data);
-
         StepVerifier
                 .create(serverSentEvents.take(3))
                 .expectNextMatches(authenticationEvent -> assertPendingQrEvent(0, authenticationEvent))
                 .expectNextMatches(authenticationEvent -> assertPendingQrEvent(1, authenticationEvent))
                 .expectNextMatches(authenticationEvent -> assertPendingQrEvent(2, authenticationEvent))
                 .verifyComplete();
-
         await().atMost(Duration.ofSeconds(2L))
                 .pollInterval(Duration.ofMillis(100L))
                 .until(() -> wireMockExtension.getServeEvents(ServeEventQuery.forStubMapping(collectPending)).getRequests().size() == 3);
@@ -171,14 +166,15 @@ class ApplicationTest {
 
     @Test
     void getStatusStreamAllPendingSameDevice() {
+        //given
         String orderReference = "131daac9-16c6-4618-beb0-365768f37288";
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(TEST_END_USER_IP)))
                 .willReturn(aResponse()
@@ -190,7 +186,6 @@ class ApplicationTest {
                                 "qrStartToken": "131daac9-16c6-4618-beb0-365768f37289",
                                 "qrStartSecret": "0ce68cf7-7d35-4386-9bad-46ee426cadca"
                                 }""".formatted(orderReference, TEST_AUTOSTART_START_TOKEN))));
-
         final StubMapping collectPending = wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/collect"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -200,27 +195,26 @@ class ApplicationTest {
                                   "status":"%s",
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, "pending"))));
-
         ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
         };
+        //when
         Flux<AuthenticationEvent> serverSentEvents = testClient
                 .get()
                 .uri("/v1/methods/swedish-bankid/authentication-events?useCase=SAME_DEVICE")
                 .header("x-envoy-external-address", TEST_END_USER_IP)
                 .accept(MediaType.valueOf(MediaType.TEXT_EVENT_STREAM_VALUE))
                 .exchange()
+                //then
                 .expectStatus().isOk()
                 .returnResult(type)
                 .getResponseBody()
                 .mapNotNull(ServerSentEvent::data);
-
         StepVerifier
                 .create(serverSentEvents.take(3))
                 .expectNextMatches(authenticationEvent -> assertPendingSameDeviceEvent(0, authenticationEvent))
                 .expectNextMatches(authenticationEvent -> assertPendingSameDeviceEvent(1, authenticationEvent))
                 .expectNextMatches(authenticationEvent -> assertPendingSameDeviceEvent(2, authenticationEvent))
                 .verifyComplete();
-
         await().atMost(Duration.ofSeconds(2L))
                 .pollInterval(Duration.ofMillis(100L))
                 .until(() -> wireMockExtension.getServeEvents(ServeEventQuery.forStubMapping(collectPending)).getRequests().size() == 3);
@@ -239,13 +233,13 @@ class ApplicationTest {
     void getStatusStreamPendingThenCompletedForQR() {
         String orderReference = "131daac9-16c6-4618-beb0-365768f37288";
         String nationalId = "123412341234";
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(TEST_END_USER_IP)))
                 .willReturn(aResponse()
@@ -257,7 +251,6 @@ class ApplicationTest {
                                 "qrStartToken": "%s",
                                 "qrStartSecret": "0ce68cf7-7d35-4386-9bad-46ee426cadca"
                                 }""".formatted(orderReference, TEST_QR_START_TOKEN))));
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/collect"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -267,9 +260,7 @@ class ApplicationTest {
                                   "status":"%s",
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, "pending"))));
-
-        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
-        };
+        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {};
         Flux<AuthenticationEvent> serverSentEvents = testClient
                 .get()
                 .uri("/v1/methods/swedish-bankid/authentication-events?useCase=QR")
@@ -306,7 +297,6 @@ class ApplicationTest {
                                                 }""".formatted(orderReference, nationalId))));
                     }
                 });
-
         StepVerifier
                 .create(serverSentEvents.takeLast(5))
                 .expectNextMatches(this::assertPendingQrEvent)
@@ -320,7 +310,6 @@ class ApplicationTest {
                         && authenticationEvent.completionData().nationalId().equals(nationalId)
                 )
                 .verifyComplete();
-
         Flux<String> nationalIdResponse = testClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1/methods/swedish-bankid/national-id")
@@ -331,11 +320,9 @@ class ApplicationTest {
                 .returnResult(NationalIdResponse.class)
                 .getResponseBody()
                 .mapNotNull(NationalIdResponse::nationalId);
-
         StepVerifier.create(nationalIdResponse)
                 .expectNext(nationalId)
                 .verifyComplete();
-
         testClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1/methods/swedish-bankid/national-id")
@@ -351,11 +338,12 @@ class ApplicationTest {
         String nationalId = "123412341234";
 
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(TEST_END_USER_IP)))
                 .willReturn(aResponse()
@@ -367,7 +355,6 @@ class ApplicationTest {
                                 "qrStartToken": "131daac9-16c6-4618-beb0-365768f37289",
                                 "qrStartSecret": "0ce68cf7-7d35-4386-9bad-46ee426cadca"
                                 }""".formatted(orderReference, TEST_AUTOSTART_START_TOKEN))));
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/collect"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -377,7 +364,6 @@ class ApplicationTest {
                                   "status":"%s",
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, "pending"))));
-
         ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
         };
         Flux<AuthenticationEvent> serverSentEvents = testClient
@@ -416,7 +402,6 @@ class ApplicationTest {
                                                 }""".formatted(orderReference, nationalId, TEST_END_USER_IP))));
                     }
                 });
-
         StepVerifier
                 .create(serverSentEvents.takeLast(5))
                 .expectNextMatches(authenticationEvent -> assertPendingSameDeviceEvent(0, authenticationEvent))
@@ -430,7 +415,6 @@ class ApplicationTest {
                         && authenticationEvent.completionData().nationalId().equals(nationalId)
                 )
                 .verifyComplete();
-
         Flux<String> nationalIdResponse = testClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1/methods/swedish-bankid/national-id")
@@ -441,11 +425,9 @@ class ApplicationTest {
                 .returnResult(NationalIdResponse.class)
                 .getResponseBody()
                 .mapNotNull(NationalIdResponse::nationalId);
-
         StepVerifier.create(nationalIdResponse)
                 .expectNext(nationalId)
                 .verifyComplete();
-
         testClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1/methods/swedish-bankid/national-id")
@@ -459,13 +441,13 @@ class ApplicationTest {
     void getStatusStreamPendingThenCompletedForSameDeviceWhenIpMismatch() {
         String orderReference = "131daac9-16c6-4618-beb0-365768f37288";
         String nationalId = "123412341234";
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(TEST_END_USER_IP)))
                 .willReturn(aResponse()
@@ -477,7 +459,6 @@ class ApplicationTest {
                                 "qrStartToken": "131daac9-16c6-4618-beb0-365768f37289",
                                 "qrStartSecret": "0ce68cf7-7d35-4386-9bad-46ee426cadca"
                                 }""".formatted(orderReference, TEST_AUTOSTART_START_TOKEN))));
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/collect"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -487,7 +468,6 @@ class ApplicationTest {
                                   "status":"%s",
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, "pending"))));
-
         ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
         };
         Flux<AuthenticationEvent> serverSentEvents = testClient
@@ -526,7 +506,6 @@ class ApplicationTest {
                                                 }""".formatted(orderReference, nationalId, TEST_END_USER_IP2))));
                     }
                 });
-
         StepVerifier
                 .create(serverSentEvents.takeLast(5))
                 .expectNextMatches(authenticationEvent -> assertPendingSameDeviceEvent(0, authenticationEvent))
@@ -546,13 +525,13 @@ class ApplicationTest {
     void getStatusStreamPendingThenCompletedButCacheTimeout() throws InterruptedException {
         String orderReference = "131daac9-16c6-4618-beb0-365768f37288";
         String nationalId = "123412341234";
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(TEST_END_USER_IP)))
                 .willReturn(aResponse()
@@ -564,7 +543,6 @@ class ApplicationTest {
                                 "qrStartToken": "%s",
                                 "qrStartSecret": "0ce68cf7-7d35-4386-9bad-46ee426cadca"
                                 }""".formatted(orderReference, TEST_QR_START_TOKEN))));
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/collect"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -574,7 +552,6 @@ class ApplicationTest {
                                   "status":"%s",
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, "pending"))));
-
         ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
         };
         Flux<AuthenticationEvent> serverSentEvents = testClient
@@ -613,7 +590,6 @@ class ApplicationTest {
                                                 }""".formatted(orderReference, nationalId))));
                     }
                 });
-
         StepVerifier
                 .create(serverSentEvents.takeLast(2))
                 .expectNextMatches(this::assertPendingQrEvent)
@@ -625,9 +601,7 @@ class ApplicationTest {
                         && authenticationEvent.hintCode() == null
                 )
                 .verifyComplete();
-
         Thread.sleep(bankIdProperties.getNationalIdCacheTTL().toMillis() + 100);
-
         testClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1/methods/swedish-bankid/national-id")
@@ -640,13 +614,13 @@ class ApplicationTest {
     @Test
     void getStatusStreamPendingAndFailed() {
         String orderReference = "131daac9-16c6-4618-beb0-365768f37288";
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(TEST_END_USER_IP)))
                 .willReturn(aResponse()
@@ -658,7 +632,6 @@ class ApplicationTest {
                                 "qrStartToken": "%s",
                                 "qrStartSecret": "0ce68cf7-7d35-4386-9bad-46ee426cadca"
                                 }""".formatted(orderReference, TEST_QR_START_TOKEN))));
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/collect"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -669,8 +642,7 @@ class ApplicationTest {
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, "pending"))));
 
-        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
-        };
+        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {};
         Flux<AuthenticationEvent> serverSentEvents = testClient
                 .get()
                 .uri("/v1/methods/swedish-bankid/authentication-events?useCase=QR")
@@ -694,7 +666,6 @@ class ApplicationTest {
                                                 }""".formatted(orderReference, "failed"))));
                     }
                 });
-
         StepVerifier
                 .create(serverSentEvents.takeLast(5))
                 .expectNextMatches(this::assertPendingQrEvent)
@@ -708,7 +679,6 @@ class ApplicationTest {
                         && authenticationEvent.hintCode().equals("hintCode")
                 )
                 .verifyComplete();
-
         testClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1/methods/swedish-bankid/national-id")
@@ -721,13 +691,13 @@ class ApplicationTest {
     @Test
     void getStatusStreamPendingThenServerError() {
         String orderReference = "131daac9-16c6-4618-beb0-365768f37288";
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(TEST_END_USER_IP)))
                 .willReturn(aResponse()
@@ -739,7 +709,6 @@ class ApplicationTest {
                                 "qrStartToken": "%s",
                                 "qrStartSecret": "0ce68cf7-7d35-4386-9bad-46ee426cadca"
                                 }""".formatted(orderReference, TEST_QR_START_TOKEN))));
-
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/collect"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -749,10 +718,7 @@ class ApplicationTest {
                                   "status":"%s",
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, "pending"))));
-
-        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
-        };
-
+        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {};
         Flux<AuthenticationEvent> serverSentEvents = testClient
                 .get()
                 .uri("/v1/methods/swedish-bankid/authentication-events?useCase=QR")
@@ -769,7 +735,6 @@ class ApplicationTest {
                                 .willReturn(serverError()));
                     }
                 });
-
         StepVerifier
                 .create(serverSentEvents.takeLast(3))
                 .expectNextMatches(this::assertPendingQrEvent)
@@ -781,7 +746,6 @@ class ApplicationTest {
                         && authenticationEvent.hintCode() == null
                 )
                 .verifyComplete();
-
         testClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1/methods/swedish-bankid/national-id")
@@ -794,18 +758,16 @@ class ApplicationTest {
     @Test
     void getStatusStreamWhenAuthGetsServerError() {
         wireMockExtension.stubFor(post(urlPathEqualTo("/rp/v6.0/auth"))
-                .withRequestBody(equalTo("""
+                .withRequestBody(equalToJson("""
                         {
                             "endUserIp": "%s",
-                            "userVisibleData": "KkxvZ2dhIGluIHDDpSBXb25kZXJsYW5kKgo=",
-                            "userVisibleDataFormat": "simpleMarkdownV1"
+                            "userVisibleData": "KkxvZ2luIHRvIFdvbmRlcmxhbmQqCg==",
+                            "userVisibleDataFormat": "simpleMarkdownV1",
+                            "returnRisk": true
                         }
                         """.formatted(TEST_END_USER_IP)))
                 .willReturn(serverError()));
-
-        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
-        };
-
+        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {};
         Flux<AuthenticationEvent> serverSentEvents = testClient
                 .get()
                 .uri("/v1/methods/swedish-bankid/authentication-events?useCase=QR")
@@ -816,7 +778,6 @@ class ApplicationTest {
                 .returnResult(type)
                 .getResponseBody()
                 .mapNotNull(ServerSentEvent::data);
-
         StepVerifier
                 .create(serverSentEvents)
                 .expectNextMatches(authenticationEvent -> authenticationEvent.status().equals(ERROR)

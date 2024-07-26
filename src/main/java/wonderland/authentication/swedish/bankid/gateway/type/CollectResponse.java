@@ -19,14 +19,13 @@ public record CollectResponse(
         PENDING,
         COMPLETE,
         FAILED;
-
         @JsonCreator
         public static Status fromString(String value) {
             return Status.valueOf(value.toUpperCase());
         }
     }
 
-    public record CompletionData(User user, Device device) {
+    public record CompletionData(User user, Device device, String risk) {
 
     }
 
