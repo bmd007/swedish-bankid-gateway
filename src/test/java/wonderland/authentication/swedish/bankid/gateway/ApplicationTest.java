@@ -552,8 +552,7 @@ class ApplicationTest {
                                   "status":"%s",
                                   "hintCode":"hintCode"
                                 }""".formatted(orderReference, "pending"))));
-        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {
-        };
+        ParameterizedTypeReference<ServerSentEvent<AuthenticationEvent>> type = new ParameterizedTypeReference<>() {};
         Flux<AuthenticationEvent> serverSentEvents = testClient
                 .get()
                 .uri("/v1/methods/swedish-bankid/authentication-events?useCase=QR")
